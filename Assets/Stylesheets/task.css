@@ -1,0 +1,78 @@
+.title{
+    text-align: center;
+    margin-top: 2%;
+}
+
+.title span{
+    font-size: 500%;
+}
+
+
+
+.task{
+    width:100%;
+    height: 10%;
+    margin: 10% auto;
+    padding-left: 4%;
+    padding: 2%;
+    text-align: left;
+    
+}
+
+.text{
+    padding: 3% 65% 5% 2%;
+    font-size: x-large;
+    border-style: solid;
+    border-radius: 2%;
+    box-shadow: 10px 10px 5px grey;
+}
+
+
+li[complete=false] >label{
+}
+
+li[complete=true] >label{
+    text-decoration: line-through;
+    color: gray;
+}
+li[complete=true] > button{
+    filter: grayscale(100);
+}
+
+button{
+    position: relative;
+    right: 12px;
+    margin: auto 2%;
+    margin-left: 3%;
+    padding: 3%;
+    border: transparent;
+    background-size: 100%;
+    background-color: transparent;
+    
+}
+
+button.finish{
+    background-image: url(https://cdn0.iconfinder.com/data/icons/basic-ui-elements-round/700/011_yes-512.png);
+    
+}
+
+button.trash{
+    background-image: url(https://cdn3.iconfinder.com/data/icons/block/32/trash_can-512.png);
+}
+
+.submission{
+    width: 50%;
+    margin: 3% auto;
+    text-align: center;
+}
+
+.submission input{
+    font-size: 24px;
+    width: 50%;
+    height: 42px;
+    padding: 0%;
+}
+
+.submission button{
+    background-image: url(https://cdn2.iconfinder.com/data/icons/pinpoint-action/48/submit-512.png);
+}
