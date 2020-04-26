@@ -1,43 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>
-            Ariki's TODO-list
-        </title>
-        <!--<link rel="stylesheet" href="Assets/Stylesheets/main.css" type="text/css"-->
-        <link rel="stylesheet" href="Assets/Stylesheets/task.css" type="text/css">
-    </head>
-    <body>
-        <div class="title">
-            <span class="title">
-                Ariki's TODO-list
-            </span>
+
+<head>
+    <meta charset="utf-8">
+    <title>
+        Ariki's TODO-list
+    </title>
+    <!--<link rel="stylesheet" href="Assets/Stylesheets/main.css" type="text/css"-->
+    <link rel="stylesheet" href="Assets/Stylesheets/task.css" type="text/css">
+</head>
+
+<body>
+    <h1 class="title">
+        Ariki's TODO-list
+    </h1>
+    <div class="container">
+        <div class="border">
+            <li class="task" complete=true>
+                <h3 class="text">
+                    Task 1
+                </h3>
+                <button class="finish" disabled=true></button>
+                <button class="trash"></button>
+            </li>
+            <li class="task" complete=false>
+                <h3 class="text">
+                    Task 1
+                </h3>
+                <button class="finish"></button>
+                <button class="trash"></button>
+            </li>
+            <li class="task" complete=false>
+                <h3 class="text">
+                    Task 1
+                </h3>
+                <button class="finish"></button>
+                <button class="trash"></button>
+            </li>
+            <div class="submission">
+                <small> What do you need to do?</small>
+                <input />
+            </div>
+            <button class="submit">Save Item</button>
         </div>
-        <li class="task" complete=true>
-            <label class = "text"> 
-                Task 1
-            </label>
-            <button class="finish">
-            <button class="trash">
-        </li>
-        <li class="task" complete=false>
-            <label class = "text"> 
-                Task 1
-            </label>
-            <button class="finish">
-            <button class="trash">
-        </li>
-        <li class="task" complete=false>
-            <label class = "text"> 
-                Task 1
-            </label>
-            <button class="finish">
-            <button class="trash">
-        </li>
-        <div class="submission">
-            <input placeholder="What's on your mind?">
-            <button class="submit">
-        </div>
-    </body>
+    </div>
+</body>
+
 </html>
