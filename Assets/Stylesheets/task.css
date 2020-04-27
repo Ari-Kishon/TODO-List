@@ -4,28 +4,25 @@
 }
 
 .container {
-    text-align: center;
-}
-
-.border {
+    display: flex;
+    flex-direction: column;
     width: 500px;
-    display: inline-block;
     box-shadow: 1px 1px 5px grey;
-    margin: auto;
-    text-align: left;
+    margin: 0 auto;
+    padding: 5px 3px 5px 1px;
 }
 
 .task {
-    text-align: left;
+    display: flex;
+    align-items: center;
     list-style-type: none;
 }
 
-.text {
+.task-title {
     padding: 10px 300px 10px 5px;
     margin: 5px 20px 10px 5px;
     box-shadow: 1px 1px 5px grey;
     display: inline-block;
-    vertical-align: middle;
     font-weight: normal;
 }
 
@@ -37,28 +34,26 @@ li[complete=true]>h3 {
 button {
     position: relative;
     right: 12px;
-    margin: 0px 0px 0px 25px;
-    vertical-align: middle;
+    margin-left: 25px;
     padding: 15px;
     border: transparent;
     background-size: 100%;
     background-color: transparent;
 
+
 }
 
 button[disabled=true] {
-    filter: invert(100%) sepia(100%) hue-rotate(60deg);
+    filter: invert(50%) sepia(100%) hue-rotate(110deg);
 }
 
 
 button.finish {
-    background-image: url(https://cdn0.iconfinder.com/data/icons/basic-ui-elements-round/700/011_yes-512.png);
-
+    background-image: url("../Icons/correct.svg");
 }
 
 button.trash {
-    background-image: url(https://cdn3.iconfinder.com/data/icons/block/32/trash_can-512.png);
-    filter: invert(50%) sepia(100%) hue-rotate(270deg);
+    background-image: url("../Icons/bin.svg");
 }
 
 
@@ -78,11 +73,17 @@ button.trash {
 }
 
 .submit {
-    float: right;
+    align-self: flex-end;
     box-shadow: 1px 1px 5px grey;
+    width: 20%;
     background-color: rgba(211, 211, 211, 0.377);
-    font-size: x-large;
+    font-size: small;
     font-weight: light;
     font-style: italic;
-    margin: auto auto 10px auto
+}
+
+svg {
+    width: 16px;
+    height: 16px;
+    fill: green;
 }
