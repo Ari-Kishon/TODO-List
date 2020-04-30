@@ -1,3 +1,7 @@
+* {
+    font-family: "Lucida Console", Courier, monospace;
+}
+
 .title {
     text-align: center;
     margin-top: 10px;
@@ -19,16 +23,23 @@
 }
 
 .task-title {
-    padding: 10px 300px 10px 5px;
+    width: 100%;
+    padding: 10px 100px 10px 5px;
     margin: 5px 20px 10px 5px;
+    border: transparent;
     box-shadow: 1px 1px 5px grey;
-    display: inline-block;
-    font-weight: normal;
+    font-size: large;
+    color: black;
 }
 
-li[complete=true]>h3 {
+li[complete=true]>input {
     text-decoration: line-through;
     color: gray;
+    filter: none;
+}
+
+li[complete=true]>* {
+    filter: invert(50%) sepia(100%) hue-rotate(110deg);
 }
 
 button {
@@ -39,12 +50,7 @@ button {
     border: transparent;
     background-size: 100%;
     background-color: transparent;
-
-
-}
-
-button[disabled=true] {
-    filter: invert(50%) sepia(100%) hue-rotate(110deg);
+    cursor: pointer;
 }
 
 
@@ -63,7 +69,8 @@ button.trash {
 }
 
 .submission input {
-    font-size: 24px;
+    font-size: medium;
+    font-weight: lighter;
     height: 22px;
     width: 95%;
     outline: none;
@@ -77,13 +84,6 @@ button.trash {
     box-shadow: 1px 1px 5px grey;
     width: 20%;
     background-color: rgba(211, 211, 211, 0.377);
-    font-size: small;
     font-weight: light;
     font-style: italic;
-}
-
-svg {
-    width: 16px;
-    height: 16px;
-    fill: green;
 }

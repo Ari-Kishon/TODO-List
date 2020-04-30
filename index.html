@@ -15,34 +15,33 @@
         Ariki's TODO-list
     </h1>
     <div class="container">
-        <li class="task" complete=true>
-            <h3 class="task-title">
-                Task 1
-            </h3>
-            <button class="finish" disabled=true>
-            </button>
-            <button class="trash"></button>
-        </li>
-        <li class="task" complete=false>
-            <h3 class="task-title">
-                Task 1
-            </h3>
-            <button class="finish"></button>
-            <button class="trash"></button>
-        </li>
-        <li class="task" complete=false>
-            <h3 class="task-title">
-                Task 1
-            </h3>
-            <button class="finish"></button>
-            <button class="trash"></button>
-        </li>
+        <div class="taskList">
+        </div>
         <div class="submission">
             <small> What do you need to do?</small>
             <input />
         </div>
-        <button class="submit">Save Item</button>
+        <button class="submit">Add Item</button>
     </div>
+
+    <!-- Firebase setup -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-database.js"></script>
+    <script>
+        var firebaseConfig = {
+            apiKey: "AIzaSyCx8ngcayIufv92cp-0WdVqosmDsGuevwo",
+            authDomain: "todo-list-a968c.firebaseapp.com",
+            databaseURL: "https://todo-list-a968c.firebaseio.com",
+            projectId: "todo-list-a968c",
+            storageBucket: "todo-list-a968c.appspot.com",
+            messagingSenderId: "278918612921",
+            appId: "1:278918612921:web:7d7eb2c90ccc2d6a389868"
+        };
+        firebase.initializeApp(firebaseConfig);
+    </script>
+    <script type="text/javascript" src="Assets/Scripts/TaskManager.js">
+    </script>
+
 </body>
 
 </html>
