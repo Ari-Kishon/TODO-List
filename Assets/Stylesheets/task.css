@@ -4,7 +4,7 @@
 
 .title {
     text-align: center;
-    margin-top: 1.5%;
+    margin-top: 10px;
 }
 
 .container {
@@ -13,7 +13,7 @@
     width: 500px;
     box-shadow: 1px 1px 5px grey;
     margin: 0 auto;
-    padding: 5px 3px 5px 1px;
+    padding: 3px;
 }
 
 .task {
@@ -22,55 +22,75 @@
     list-style-type: none;
 }
 
-.task-title {
-    width: 100%;
-    padding: 1.5% 15% 1.5% 0.75%;
-    margin: 1% 2.5%;
-    border: transparent;
-    box-shadow: 1px 1px 5px grey;
-    font-size: large;
-}
-
-li[complete=true]>input {
+.task[complete=true]>.taskTitle {
     text-decoration: line-through;
     color: gray;
     filter: none;
 }
 
-li[complete=true]>* {
-    filter: invert(50%) sepia(100%) hue-rotate(110deg);
+.task[complete=true]>* {
+    fill: green;
+}
+
+.taskTitle {
+    width: 100%;
+    padding: 10px;
+    margin: 6px;
+    border: transparent;
+    box-shadow: 1px 1px 5px grey;
+    font-size: large;
 }
 
 button {
     position: relative;
-    right: 12px;
-    margin-left: 5%;
-    padding: 15px;
     border: transparent;
-    background-size: 100%;
     background-color: transparent;
     cursor: pointer;
 }
 
-
-button.finish {
-    background-image: url("../Icons/correct.svg");
+.finishButton {
+    right: 12px;
+    margin-left: 15px;
+    outline: none;
 }
 
-button.trash {
-    background-image: url("../Icons/bin.svg");
+.finishButton svg {
+    width: 30px;
+    height: 30px;
 }
 
+.trashButton {
+    right: 12px;
+    outline: none;
+}
+
+.trashButton svg {
+    width: 30px;
+    height: 30px;
+    fill: maroon;
+}
+
+.submitButton {
+    right: 12px;
+    padding: 15px;
+    margin: 5px;
+    align-self: flex-end;
+    box-shadow: 1px 1px 5px grey;
+    width: 20%;
+    background-color: rgba(211, 211, 211, 0.377);
+    font-weight: light;
+    font-style: italic;
+}
 
 .submission {
     text-align: left;
     display: flex;
     flex-direction: column;
-    margin: 5% auto;
+    margin: 20px auto;
     width: 95%;
 }
 
-.submission input {
+.newTaskInput {
     font-size: medium;
     font-weight: lighter;
     outline: none;
@@ -80,13 +100,4 @@ button.trash {
     border-color: transparent;
     box-shadow: 0px 1px grey;
     width: 95%;
-}
-
-.submit {
-    align-self: flex-end;
-    box-shadow: 1px 1px 5px grey;
-    width: 20%;
-    background-color: rgba(211, 211, 211, 0.377);
-    font-weight: light;
-    font-style: italic;
 }
