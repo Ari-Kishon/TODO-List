@@ -6,10 +6,47 @@ const taskList = document.querySelector(".taskList");
 const submitButton = document.querySelector(".submitButton");
 const newTaskInput = document.querySelector(".newTaskInput");
 
+let tasks = [];
 
-const createTask = (text) => {
+const getParentUID = (element) => {
+    return element.parentElement.getAttribute("uid");
+}
+
+const getTaskByID = (id) => {
+    for (const obj of tasks) {
+        if (obj.id == id) {
+            return obj.task;
+        }
+    }
+}
+
+const addTaskToDB = (id, text) => {
+    tasks.push({
+        id,
+        task: {
+            text,
+            complete: false
+        }
+    })
+}
+
+const removeTaskFromDB = (id) => {
+    tasks = tasks.filter(obj => obj.id != id);
+}
+
+const toggleTaskInDB = (id) => {
+    const task = getTaskByID(id);
+    task.complete = !task.complete;
+}
+
+const updateTaskInDB = (id, text) => {
+    getTaskByID(id).text = text;
+}
+
+const createTask = (text, id = Date.now()) => {
+    addTaskToDB(id, text);
     clearInput();
-    taskList.appendChild(createTaskElement(text));
+    taskList.appendChild(createTaskElement(id, text));
 }
 
 const clearInput = () => {
@@ -30,10 +67,11 @@ const toggleTask = (task) => {
 /**
  * Create Elements 
  **/
-const createTaskElement = (text, complete = false) => {
+const createTaskElement = (id, text, complete = false) => {
     const task = document.createElement("li");
     task.className = "task"
     task.setAttribute("complete", complete);
+    task.setAttribute("uid", id);
     task.appendChild(createTextBox(text));
     task.appendChild(createFinishButton());
     task.appendChild(createTrashButton());
@@ -44,6 +82,9 @@ const createTextBox = (text) => {
     box.className = ("taskTitle");
     box.value = text;
     box.placeholder = "EMPTY";
+    box.addEventListener('input', (e) => {
+        updateTaskInDB(getParentUID(box), e.target.value)
+    })
     return box;
 }
 const createFinishButton = () => {
@@ -52,6 +93,7 @@ const createFinishButton = () => {
     button.innerHTML = checkSVG;
     button.addEventListener('click', () => {
         toggleTask(button.parentElement);
+        toggleTaskInDB(getParentUID(button));
     });
     return button;
 }
@@ -61,8 +103,8 @@ const createTrashButton = () => {
     button.innerHTML = trashSVG;
     button.addEventListener('click', () => {
         button.parentElement.remove();
+        removeTaskFromDB(getParentUID(button));
     });
-
     return button;
 }
 
@@ -75,6 +117,7 @@ submitButton.addEventListener('click', () => {
     } else {
         newTaskInput.placeholder = "please write a task";
     }
+    console.log(tasks);
 });
 
 createTask("Hello");
