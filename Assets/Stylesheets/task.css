@@ -52,19 +52,13 @@ button {
     outline: none;
 }
 
-.finishButton svg {
-    width: 30px;
-    height: 30px;
-}
+.finishButton svg {}
 
 .trashButton {
-    right: 12px;
     outline: none;
 }
 
 .trashButton svg {
-    width: 30px;
-    height: 30px;
     fill: maroon;
 }
 
@@ -90,7 +84,6 @@ button {
 
 .newTaskInput {
     font-size: medium;
-    font-weight: lighter;
     outline: none;
     border: 0;
     padding: 0;
