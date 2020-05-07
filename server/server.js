@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 
 const tasks = [];
-const getTaskByID = (id) => tasks.find((obj) => obj.id == id);
+const getTaskByID = (id) => tasks.find((obj) => obj.id === id);
 
 const server = express();
 server.use(bodyParser.urlencoded({
@@ -18,11 +18,10 @@ function getTaskFromServer({
     id
   }
 }, res) {
-  const task = tasks.find((obj) => obj.id == id);
+  const task = tasks.find((obj) => obj.id === id);
   if (task) {
     res.send(task.task);
   } else {
-    res.status(500);
-    res.send(`task:"${id}" was not found`);
+    res.status(500).send(`task:"${id}" was not found`);
   }
 }
