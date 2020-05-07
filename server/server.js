@@ -18,9 +18,9 @@ function getTaskFromServer({
     id
   }
 }, res) {
-  const task = tasks.find((obj) => obj.id === id);
+  const task = getTaskByID(id);
   if (task) {
-    res.send(task.task);
+    res.send(task);
   } else {
     res.status(500).send(`task:"${id}" was not found`);
   }
