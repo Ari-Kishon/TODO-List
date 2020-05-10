@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require("path");
 
 const tasks = [];
 const addNewTask = (id, text) => tasks.push({
@@ -15,10 +16,10 @@ const addNewTask = (id, text) => tasks.push({
 //
 // server setup
 const server = express();
-server.use(express.static('../'));
+server.use(express.static('..'));
 server.use(bodyParser.json());
 // GET requests
-server.get("/", (req, res) => res.send());
+server.get("/", (req, res) => res.sendFile(path.join(__dirname, '../app', 'index.html')));
 server.get("/tasks", getAllTasksFromServer);
 server.get("/tasks/:id", getTaskFromServer);
 // POST requests
