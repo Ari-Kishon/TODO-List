@@ -7,61 +7,134 @@ const newTaskInput = document.querySelector(".newTaskInput");
 
 const tasks = [];
 
-const getTaskByID = (id) => {
-    const task = tasks.find(obj => obj.id == id).task;
-    if (!task) {
-        throw new Error(`could not find task id: ${id}`);
-    }
-    return task;
+//
+////
+////// PROMISES
+////
+//
+const promiseGetTasks = () => {
+    return fetch(`/tasks`, {
+            headers: {
+                "Accept": "application/json"
+            },
+            method: 'GET'
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .catch(error => {
+            throw (error);
+        })
 }
-const updateTask = (id, text) => {
-    const task = getTaskByID(id)
-    if (!task) {
-        throw new Error(`could not update task ${id}`)
-    }
-    task.text = text;
+const promiseCreateTask = (text) => {
+    return fetch('/tasks', {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                "Text": text
+            })
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .catch(error => {
+            throw (error);
+        })
+}
+const promiseToggleTask = (id) => {
+    return fetch('/tasks/complete', {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                "id": id
+            })
+        })
+        .then((response) => {
+            return response.json()
+        })
+        .catch(error => {
+            throw (error);
+        })
+}
+const promiseRenameTask = (id, text) => {
+    return fetch('/tasks/rename', {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                "id": id,
+                "Text": text
+            })
+        })
+        .catch(error => {
+            throw (error);
+        })
+}
+const promiseRemoveTask = (id) => {
+    return fetch('/tasks/remove', {
+            headers: {
+                "Content-Type": "application/json"
+            },
+            method: 'POST',
+            body: JSON.stringify({
+                "id": id
+            })
+        })
+        .catch(error => {
+            throw (error);
+        })
 }
 
-const createTask = (text, id = Date.now()) => {
+//
+////
+////// ASYNC FUNCTIONS
+////
+//
+async function loadAllTasks() {
+    const list = await promiseGetTasks();
+    for (task of list) {
+        taskList.appendChild(createTaskElement(task.id, task.text, task.complete));
+    }
+}
+
+async function createTask(text) {
     if (!taskList || !newTaskInput) {
         throw new Error(`newInput ot TaskList could not be found`);
     }
-    tasks.push({
-        id,
-        task: {
-            text,
-            complete: false
-        }
-    })
-    taskList.appendChild(createTaskElement(id, text));
+    const taskID = await promiseCreateTask(text);
+    taskList.appendChild(createTaskElement(taskID, text));
     newTaskInput.value = "";
-    newTaskInput.placeholder = "";
 }
 
-const toggleTask = (id) => {
-    const task = getTaskByID(id);
+async function toggleTask(id) {
+    isComplete = await promiseToggleTask(id);
     const taskElement = document.querySelector(`.task[uid="${id}"]`)
     const inputElement = document.querySelector(`.task[uid="${id}"] input`);
     if (!taskElement || !inputElement) {
         throw new Error('task element could not be found');
     }
-    taskElement.setAttribute('complete', !task.complete);
-    inputElement.disabled = !task.complete;
-    task.complete = !task.complete;
+    taskElement.setAttribute('complete', isComplete);
+    inputElement.disabled = !isComplete;
 }
 
-const removeTask = (task) => {
-    const index = tasks.findIndex((obj) => obj.id == task.getAttribute("uid"));
-    if (index < 0) {
-        throw new Error('could not remove task')
-    }
-    tasks.splice(index, 1);
-    task.remove();
+async function renameTask(id, text) {
+    await promiseRenameTask(id, text);
+}
+async function removeTask(id) {
+    await promiseRemoveTask(id);
+    taskList.querySelector(`.task[uid="${id}"]`).remove();
 }
 
-/**
- * Create Elements 
- **/
+//
+////
+////// ELEMENT CONSTRUCTORS
+////
+//
 const createTaskElement = (id, text, complete = false) => {
     const task = document.createElement("li");
     task.className = "task"
@@ -69,7 +142,7 @@ const createTaskElement = (id, text, complete = false) => {
     task.setAttribute("uid", id);
     task.appendChild(createInput(id, text));
     task.appendChild(createFinishButton(id));
-    task.appendChild(createTrashButton());
+    task.appendChild(createTrashButton(id));
     return task;
 }
 const createInput = (id, text) => {
@@ -78,7 +151,7 @@ const createInput = (id, text) => {
     input.value = text;
     input.placeholder = "EMPTY";
     input.addEventListener('input', (e) => {
-        updateTask(id, e.target.value)
+        renameTask(id, e.target.value)
     })
     return input;
 }
@@ -91,19 +164,21 @@ const createFinishButton = (id) => {
     });
     return button;
 }
-const createTrashButton = () => {
+const createTrashButton = (id) => {
     const button = document.createElement("button");
     button.className = "trashButton";
     button.innerHTML = trashSVG;
     button.addEventListener('click', () => {
-        removeTask(button.parentElement);
+        removeTask(id);
     });
     return button;
 }
 
-/**
- * Event Listeners
- **/
+//
+////
+////// EVENT LISTENERS
+////
+//
 if (!submitButton) {
     throw new Error(`could not find the submit button`);
 }
@@ -113,5 +188,8 @@ submitButton.addEventListener('click', () => {
     } else {
         newTaskInput.placeholder = "please write a task";
     }
-    console.log(tasks)
 });
+
+//WHEN SHOULD I REFRESH TASKS???
+//LOAD TASKS ON SERVER LOAD
+loadAllTasks();
