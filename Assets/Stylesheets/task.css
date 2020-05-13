@@ -22,13 +22,13 @@
   list-style-type: none;
 }
 
-.task[complete="true"] > .taskTitle {
+.task[complete="true"]>.taskTitle {
   text-decoration: line-through;
   color: gray;
   filter: none;
 }
 
-.task[complete="true"] > * {
+.task[complete="true"]>* {
   fill: green;
 }
 
@@ -53,8 +53,7 @@ button {
   outline: none;
 }
 
-.finishButton svg {
-}
+.finishButton svg {}
 
 .trashButton {
   outline: none;
@@ -97,6 +96,7 @@ button {
 
 .errorPopUp {
   width: 500px;
+  height: 45px;
   margin: 5px auto;
   color: mintcream;
   background-color: rosybrown;

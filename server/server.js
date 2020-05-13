@@ -2,7 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 
-const D_PORT = 8080;
+const PORT = 8080;
 
 const tasks = [];
 const addNewTask = (id, text) =>
@@ -12,85 +12,42 @@ const addNewTask = (id, text) =>
     complete: false,
   });
 
-//
-////
-////// SERVER
-////
-//
-// server setup
 const server = express();
 server.use(express.static(path.join(__dirname, "..")));
 server.use(bodyParser.json());
-// GET requests
 server.get("/", (req, res) =>
   res.sendFile(path.join(__dirname, "../app", "index.html"))
 );
 server.get("/tasks", getAllTasks);
-server.get("/tasks/:id", getTask);
-// POST requests
 server.post("/", (req, res) => res.send("no path specified"));
-server.post("/tasks", saveTask);
-server.post("/tasks/complete", toggleTask);
-server.post("/tasks/rename", renameTask);
-server.post("/tasks/remove", removeTask);
-// server action
-server.listen(D_PORT, () =>
-  console.log(`The server is listening on port :${D_PORT}`)
+server.post("/task", updateTask);
+server.delete("/task", removeTask);
+server.listen(PORT, () =>
+  console.log(`The server is listening at: localhost:${PORT}`)
 );
-
-//
-///
-///// SERVER FUNCTIONS
-///
-//
-function getTask({ params: { id } }, res) {
-  const task = tasks.find((obj) => obj.id === id);
-  if (task) {
-    res.status(200).send(task);
-  } else {
-    res.status(500).send(`task:"${id}" was not found`);
-  }
-  res.end();
-}
 
 function getAllTasks(req, res) {
   res.send(JSON.stringify(tasks));
   res.status(200).end();
 }
 
-function saveTask(req, res) {
-  const text = req.body.Text;
-  if (text) {
-    const id = Date.now();
-    addNewTask(id, text);
-    res.status(200).send(`${id}`);
-  } else {
-    res.status(500).send("invalid request");
-  }
-  res.end();
-}
-
-function toggleTask(req, res) {
+function updateTask(req, res) {
+  const text = req.body.text;
   const id = req.body.id;
   const task = tasks.find((obj) => obj.id === id);
   if (task) {
-    task.complete = !task.complete;
-    res.status(200).send(`${task.complete}`);
+    if (req.body.toggle) {
+      task.complete = !task.complete;
+      res.status(200).send(`${task.complete}`).end();
+    } else if (text !== undefined) {
+      task.text = text;
+      res.status(200).end();
+    }
   } else {
-    res.status(500).send(`task:"${id}" was not found`);
+    const id = Date.now();
+    addNewTask(id, text);
+    res.status(200).send(`${id}`).end();
   }
-  res.end();
-}
-
-function renameTask(req, res) {
-  const task = tasks.find((obj) => obj.id === req.body.id);
-  if (task) {
-    task.text = req.body.Text;
-    res.status(200);
-  } else {
-    res.status(500).send(`task:"${id}" was not found`);
-  }
-  res.end();
 }
 
 function removeTask(req, res) {
@@ -105,6 +62,5 @@ function removeTask(req, res) {
   } else {
     res.status(500).send("invalid request");
   }
-
   res.end();
 }

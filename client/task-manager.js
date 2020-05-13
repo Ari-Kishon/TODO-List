@@ -9,10 +9,6 @@ const newTaskInput = document.querySelector(".newTaskInput");
 
 const tasks = [];
 
-const displayError = (message) => {
-  document.body.appendChild(createErrorElement(message));
-};
-
 const getTaskElement = (id) => {
   const task = taskList.querySelector(`.task[uid="${id}"]`);
   if (task) {
@@ -31,8 +27,10 @@ async function loadAllTasks() {
       method: "GET",
     })
   ).json();
-  for (task of list) {
-    taskList.appendChild(createTaskElement(task.id, task.text, task.complete));
+  if (Array.isArray(list)) {
+    for (const task of list) {
+      taskList.appendChild(createTaskElement(task.id, task.text, task.complete));
+    }
   }
 }
 
@@ -40,14 +38,14 @@ async function createTask(text) {
   if (!taskList || !newTaskInput) {
     throw new Error(`newInput ot TaskList could not be found`);
   }
-  let taskID = await (
-    await fetch("/tasks", {
+  const taskID = await (
+    await fetch("/task", {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
-        Text: text,
+        text
       }),
     })
   ).json();
@@ -62,13 +60,14 @@ async function toggleTask(id) {
     throw new Error("task element could not be found");
   }
   const isComplete = await (
-    await fetch("/tasks/complete", {
+    await fetch("/task", {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
-        id: id,
+        id,
+        toggle: true,
       }),
     })
   ).json();
@@ -77,35 +76,34 @@ async function toggleTask(id) {
 }
 
 async function renameTask(id, text) {
-  await fetch("/tasks/rename", {
+  await fetch("/task", {
     headers: {
       "Content-Type": "application/json",
     },
     method: "POST",
     body: JSON.stringify({
-      id: id,
-      Text: text,
+      id,
+      text,
     }),
   });
 }
+
 async function removeTask(id) {
-  await fetch("/tasks/remove", {
+  await fetch("/task", {
     headers: {
       "Content-Type": "application/json",
     },
-    method: "POST",
+    method: "DELETE",
     body: JSON.stringify({
-      id: id,
+      id
     }),
   });
   getTaskElement(id).remove();
 }
 
-//
-////
-////// ELEMENT CONSTRUCTORS
-////
-//
+/** 
+ * Element Constructors
+ */
 const createTaskElement = (id, text, complete = false) => {
   const task = document.createElement("li");
   task.className = "task";
@@ -157,16 +155,14 @@ const createErrorElement = (message) => {
   error.className = "errorPopUp";
   error.innerHTML = message;
   error.addEventListener("click", () => {
-    error.remove();
+    error.hidden = true;
   });
-  setTimeout(() => error.remove(), 5000);
   return error;
 };
-//
-////
-////// EVENT LISTENERS
-////
-//
+
+/**
+ * Event Listeners
+ */
 if (!submitButton) {
   throw new Error(`could not find the submit button`);
 }
@@ -180,7 +176,14 @@ submitButton.addEventListener("click", () => {
   }
 });
 
-//LOAD TASKS ON INIT
+const errorPopUp = document.body.appendChild(createErrorElement());
+errorPopUp.hidden = true;
+const displayError = (message) => {
+  errorPopUp.hidden = false;
+  errorPopUp.innerHTML = message;
+};
+
+//Load tasks on init
 loadAllTasks().catch(() => {
-  displayError("Communication Error: could not load from server");
+  displayError("Communication Error: could not load tasks from server");
 });
