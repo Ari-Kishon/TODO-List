@@ -34,11 +34,12 @@ function getAllTasks(req, res) {
 function updateTask(req, res) {
   const text = req.body.text;
   const id = req.body.id;
+  const completed = req.body.completed;
   const task = tasks.find((obj) => obj.id === id);
   if (task) {
-    if (req.body.toggle) {
-      task.complete = !task.complete;
-      res.status(200).send(`${task.complete}`).end();
+    if (completed !== undefined) {
+      task.complete = completed;
+      res.status(200).send(`${completed}`).end();
     } else if (text !== undefined) {
       task.text = text;
       res.status(200).end();
@@ -56,9 +57,10 @@ function removeTask(req, res) {
     const index = tasks.findIndex((obj) => obj.id === id);
     if (index < 0) {
       res.status(500).send(`task:"${id}" was not found`);
+    } else {
+      tasks.splice(index, 1);
+      res.status(200);
     }
-    tasks.splice(index, 1);
-    res.status(200);
   } else {
     res.status(500).send("invalid request");
   }

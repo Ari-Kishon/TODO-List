@@ -29,7 +29,9 @@ async function loadAllTasks() {
   ).json();
   if (Array.isArray(list)) {
     for (const task of list) {
-      taskList.appendChild(createTaskElement(task.id, task.text, task.complete));
+      taskList.appendChild(
+        createTaskElement(task.id, task.text, task.complete)
+      );
     }
   }
 }
@@ -45,7 +47,7 @@ async function createTask(text) {
       },
       method: "POST",
       body: JSON.stringify({
-        text
+        text,
       }),
     })
   ).json();
@@ -53,7 +55,7 @@ async function createTask(text) {
   newTaskInput.value = "";
 }
 
-async function toggleTask(id) {
+async function toggleTask(id, completed) {
   const inputElement = document.querySelector(`.task[uid="${id}"] input`);
   const taskElement = document.querySelector(`.task[uid="${id}"]`);
   if (!taskElement || !inputElement) {
@@ -67,12 +69,12 @@ async function toggleTask(id) {
       method: "POST",
       body: JSON.stringify({
         id,
-        toggle: true,
+        completed
       }),
     })
   ).json();
   taskElement.setAttribute("complete", isComplete);
-  inputElement.disabled = !isComplete;
+  inputElement.disabled = isComplete;
 }
 
 async function renameTask(id, text) {
@@ -95,13 +97,13 @@ async function removeTask(id) {
     },
     method: "DELETE",
     body: JSON.stringify({
-      id
+      id,
     }),
   });
   getTaskElement(id).remove();
 }
 
-/** 
+/**
  * Element Constructors
  */
 const createTaskElement = (id, text, complete = false) => {
@@ -110,7 +112,10 @@ const createTaskElement = (id, text, complete = false) => {
   task.setAttribute("complete", complete);
   task.setAttribute("uid", id);
   task.appendChild(createInput(id, text));
-  task.appendChild(createFinishButton(id));
+  task.appendChild(createFinishButton(id, () => {
+    if (task.getAttribute("complete") === 'true') return true;
+    else return false
+  }));
   task.appendChild(createTrashButton(id));
   return task;
 };
@@ -126,12 +131,12 @@ const createInput = (id, text) => {
   });
   return input;
 };
-const createFinishButton = (id) => {
+const createFinishButton = (id, getComplete) => {
   const button = document.createElement("button");
   button.className = "finishButton";
   button.innerHTML = checkSVG;
   button.addEventListener("click", () => {
-    toggleTask(id).catch(() => {
+    toggleTask(id, !getComplete()).catch(() => {
       displayError(
         "Communication Error: could not toggle task status in server"
       );
@@ -151,7 +156,7 @@ const createTrashButton = (id) => {
   return button;
 };
 const createErrorElement = (message) => {
-  const error = document.createElement("Div");
+  const error = document.createElement("div");
   error.className = "errorPopUp";
   error.innerHTML = message;
   error.addEventListener("click", () => {
