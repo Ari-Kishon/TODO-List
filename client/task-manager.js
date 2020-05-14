@@ -61,20 +61,18 @@ async function toggleTask(id, completed) {
   if (!taskElement || !inputElement) {
     throw new Error("task element could not be found");
   }
-  const isComplete = await (
-    await fetch("/task", {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        id,
-        completed
-      }),
-    })
-  ).json();
-  taskElement.setAttribute("complete", isComplete);
-  inputElement.disabled = isComplete;
+  await fetch("/task", {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      id,
+      completed
+    }),
+  })
+  taskElement.setAttribute("complete", completed);
+  inputElement.disabled = completed;
 }
 
 async function renameTask(id, text) {
@@ -113,8 +111,7 @@ const createTaskElement = (id, text, complete = false) => {
   task.setAttribute("uid", id);
   task.appendChild(createInput(id, text));
   task.appendChild(createFinishButton(id, () => {
-    if (task.getAttribute("complete") === 'true') return true;
-    else return false
+    return (task.getAttribute("complete") === 'true');
   }));
   task.appendChild(createTrashButton(id));
   return task;
