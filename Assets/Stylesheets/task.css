@@ -1,94 +1,105 @@
 * {
-    font-family: "Lucida Console", Courier, monospace;
+  font-family: "Lucida Console", Courier, monospace;
 }
 
 .title {
-    text-align: center;
-    margin-top: 10px;
+  text-align: center;
+  margin-top: 10px;
 }
 
 .container {
-    display: flex;
-    flex-direction: column;
-    width: 500px;
-    box-shadow: 1px 1px 5px grey;
-    margin: 0 auto;
-    padding: 3px;
+  display: flex;
+  flex-direction: column;
+  width: 500px;
+  box-shadow: 1px 1px 5px grey;
+  margin: 0 auto;
+  padding: 3px;
 }
 
 .task {
-    display: flex;
-    align-items: center;
-    list-style-type: none;
+  display: flex;
+  align-items: center;
+  list-style-type: none;
 }
 
-.task[complete=true]>.taskTitle {
-    text-decoration: line-through;
-    color: gray;
-    filter: none;
+.task[complete="true"]>.taskTitle {
+  text-decoration: line-through;
+  color: gray;
+  filter: none;
 }
 
-.task[complete=true]>* {
-    fill: green;
+.task[complete="true"]>* {
+  fill: green;
 }
 
 .taskTitle {
-    width: 100%;
-    padding: 10px;
-    margin: 6px;
-    border: transparent;
-    box-shadow: 1px 1px 5px grey;
-    font-size: large;
+  width: 100%;
+  padding: 10px;
+  margin: 6px;
+  border: transparent;
+  box-shadow: 1px 1px 5px grey;
+  font-size: large;
+  color: black;
 }
 
 button {
-    border: transparent;
-    background-color: transparent;
-    cursor: pointer;
+  border: transparent;
+  background-color: transparent;
+  cursor: pointer;
 }
 
 .finishButton {
-    margin-left: 3px;
-    outline: none;
+  margin-left: 3px;
+  outline: none;
 }
 
 .finishButton svg {}
 
 .trashButton {
-    outline: none;
+  outline: none;
 }
 
 .trashButton svg {
-    fill: maroon;
+  fill: maroon;
 }
 
 .submitButton {
-    padding: 15px;
-    margin: 5px;
-    margin-right: 12px;
-    align-self: flex-end;
-    box-shadow: 1px 1px 5px grey;
-    width: 20%;
-    background-color: rgba(211, 211, 211, 0.377);
-    font-weight: light;
-    font-style: italic;
+  padding: 15px;
+  margin: 5px;
+  margin-right: 12px;
+  align-self: flex-end;
+  box-shadow: 1px 1px 5px grey;
+  width: 20%;
+  background-color: rgba(211, 211, 211, 0.377);
+  font-weight: light;
+  font-style: italic;
 }
 
 .submission {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    margin: 20px auto;
-    width: 95%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  margin: 20px auto;
+  width: 95%;
 }
 
 .newTaskInput {
-    font-size: medium;
-    outline: none;
-    border: 0;
-    padding: 0;
-    font-style: italic;
-    border-color: transparent;
-    box-shadow: 0px 1px grey;
-    width: 95%;
+  font-size: medium;
+  outline: none;
+  border: 0;
+  padding: 0;
+  font-style: italic;
+  border-color: transparent;
+  box-shadow: 0px 1px grey;
+  width: 95%;
+}
+
+.errorPopUp {
+  width: 500px;
+  height: 45px;
+  margin: 5px auto;
+  color: mintcream;
+  background-color: rosybrown;
+  text-align: center;
+  box-shadow: 1px 1px 5px maroon;
 }

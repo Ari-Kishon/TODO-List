@@ -1,27 +1,68 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const path = require("path");
+
+const PORT = 8080;
 
 const tasks = [];
-const getTaskByID = (id) => tasks.find((obj) => obj.id === id);
+const addNewTask = (id, text) =>
+  tasks.push({
+    id,
+    text,
+    complete: false,
+  });
 
 const server = express();
-server.use(bodyParser.urlencoded({
-  extended: true
-}));
-server.get("/", (req, res) => res.send("no path specified"));
-server.get("/tasks", (req, res) => res.send(JSON.stringify(tasks)));
-server.get("/tasks/:id", getTaskFromServer);
-server.listen(8080);
+server.use(express.static(path.join(__dirname, "..")));
+server.use(bodyParser.json());
+server.get("/", (req, res) =>
+  res.sendFile(path.join(__dirname, "../app", "index.html"))
+);
+server.get("/tasks", getAllTasks);
+server.post("/", (req, res) => res.send("no path specified"));
+server.post("/task", updateTask);
+server.delete("/task", removeTask);
+server.listen(PORT, () =>
+  console.log(`The server is listening at: localhost:${PORT}`)
+);
 
-function getTaskFromServer({
-  params: {
-    id
-  }
-}, res) {
+function getAllTasks(req, res) {
+  res.send(JSON.stringify(tasks));
+  res.status(200).end();
+}
+
+function updateTask(req, res) {
+  const text = req.body.text;
+  const id = req.body.id;
+  const completed = req.body.completed;
   const task = tasks.find((obj) => obj.id === id);
   if (task) {
-    res.send(task.task);
+    if (completed !== undefined) {
+      task.complete = completed;
+      res.status(200).send(`${completed}`).end();
+    } else if (text !== undefined) {
+      task.text = text;
+      res.status(200).end();
+    }
   } else {
-    res.status(500).send(`task:"${id}" was not found`);
+    const id = Date.now();
+    addNewTask(id, text);
+    res.status(200).send(`${id}`).end();
   }
+}
+
+function removeTask(req, res) {
+  const id = req.body.id;
+  if (id) {
+    const index = tasks.findIndex((obj) => obj.id === id);
+    if (index < 0) {
+      res.status(500).send(`task:"${id}" was not found`);
+    } else {
+      tasks.splice(index, 1);
+      res.status(200);
+    }
+  } else {
+    res.status(500).send("invalid request");
+  }
+  res.end();
 }
