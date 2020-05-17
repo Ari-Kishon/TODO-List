@@ -3,79 +3,89 @@ const trashSVG =
 const checkSVG =
   '<svg height="30pt" viewBox="0 -46 417.81333 417" width="30pt" xmlns="http://www.w3.org/2000/svg"><path d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"/></svg>';
 
-const taskList = document.querySelector(".taskList");
-const submitButton = document.querySelector(".submitButton");
-const newTaskInput = document.querySelector(".newTaskInput");
+interface Task {
+  id: number;
+  text: string;
+  complete: boolean;
+}
+const taskListElement = document.querySelector(".taskList");
+const submitButtonElement = document.querySelector(".submitButton");
+const newTaskInputElement = document.querySelector(".newTaskInput");
 
-const tasks = [];
+const tasks: Task[] = [];
 
-const getTaskElement = (id) => {
-  const task = taskList.querySelector(`.task[uid="${id}"]`);
-  if (task) {
-    return task;
-  } else {
+const getTaskElement = (id: number) => {
+  const task = document.querySelector(`.task[uid="${id}"]`);
+  if (!task) {
     throw new Error(`Could not find task #${id}`);
   }
+  return task;
 };
 
 async function loadAllTasks() {
-  const list = await (
-    await fetch(`/tasks`, {
-      headers: {
-        Accept: "application/json",
-      },
-      method: "GET",
-    })
-  ).json();
-  if (Array.isArray(list)) {
-    for (const task of list) {
-      taskList.appendChild(
-        createTaskElement(task.id, task.text, task.complete)
-      );
+  if (isDivElement(taskListElement)) {
+    const list = await (
+      await fetch(`/tasks`, {
+        headers: {
+          Accept: "application/json",
+        },
+        method: "GET",
+      })
+    ).json();
+    if (Array.isArray(list)) {
+      for (const task of list) {
+        taskListElement.appendChild(
+          createTaskElement(task.id, task.text, task.complete)
+        );
+      }
     }
+  } else {
+    throw new Error("task list element could not be found");
   }
 }
 
-async function createTask(text) {
-  if (!taskList || !newTaskInput) {
+async function createTask(text: string) {
+  if (isDivElement(taskListElement) && isInputElement(newTaskInputElement)) {
+    const taskID: number = await (
+      await fetch("/task", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({
+          text,
+        }),
+      })
+    ).json();
+    taskListElement.appendChild(createTaskElement(taskID, text));
+    newTaskInputElement.value = "";
+  } else {
     throw new Error(`newInput ot TaskList could not be found`);
   }
-  const taskID = await (
+}
+
+async function toggleTask(id: number, completed: boolean) {
+  const inputElement = document.querySelector(`.task[uid="${id}"] input`);
+  const taskElement = document.querySelector(`.task[uid="${id}"]`);
+  if (isLiElement(taskElement) && isInputElement(inputElement)) {
     await fetch("/task", {
       headers: {
         "Content-Type": "application/json",
       },
       method: "POST",
       body: JSON.stringify({
-        text,
+        id,
+        completed,
       }),
-    })
-  ).json();
-  taskList.appendChild(createTaskElement(taskID, text));
-  newTaskInput.value = "";
-}
-
-async function toggleTask(id, completed) {
-  const inputElement = document.querySelector(`.task[uid="${id}"] input`);
-  const taskElement = document.querySelector(`.task[uid="${id}"]`);
-  if (!taskElement || !inputElement) {
+    });
+    taskElement.setAttribute("complete", completed ? "true" : "false");
+    inputElement.disabled = completed;
+  } else {
     throw new Error("task element could not be found");
   }
-  await fetch("/task", {
-    headers: {
-      "Content-Type": "application/json",
-    },
-    method: "POST",
-    body: JSON.stringify({
-      id,
-      completed
-    }),
-  })
-  taskElement.setAttribute("complete", completed);
-  inputElement.disabled = completed;
 }
 
-async function renameTask(id, text) {
+async function renameTask(id: number, text: string) {
   await fetch("/task", {
     headers: {
       "Content-Type": "application/json",
@@ -88,7 +98,7 @@ async function renameTask(id, text) {
   });
 }
 
-async function removeTask(id) {
+async function removeTask(id: number) {
   await fetch("/task", {
     headers: {
       "Content-Type": "application/json",
@@ -104,31 +114,42 @@ async function removeTask(id) {
 /**
  * Element Constructors
  */
-const createTaskElement = (id, text, complete = false) => {
+const createTaskElement = (
+  id: number,
+  text: string,
+  complete = false
+): HTMLLIElement => {
   const task = document.createElement("li");
   task.className = "task";
-  task.setAttribute("complete", complete);
-  task.setAttribute("uid", id);
+  task.setAttribute("complete", complete ? "true" : "false");
+  task.setAttribute("uid", id.toString());
   task.appendChild(createInput(id, text));
-  task.appendChild(createFinishButton(id, () => {
-    return (task.getAttribute("complete") === 'true');
-  }));
+  task.appendChild(
+    createFinishButton(id, () => {
+      return task.getAttribute("complete") === "true";
+    })
+  );
   task.appendChild(createTrashButton(id));
   return task;
 };
-const createInput = (id, text) => {
+const createInput = (id: number, text: string): HTMLInputElement => {
   const input = document.createElement("input");
   input.className = "taskTitle";
   input.value = text;
   input.placeholder = "EMPTY";
-  input.addEventListener("input", (e) => {
-    renameTask(id, e.target.value).catch(() => {
-      displayError("Communication Error: could not rename task in server");
-    });
+  input.addEventListener("input", (e: any) => {
+    if (e.target) {
+      renameTask(id, e.target.value).catch(() => {
+        displayError("Communication Error: could not rename task in server");
+      });
+    }
   });
   return input;
 };
-const createFinishButton = (id, getComplete) => {
+const createFinishButton = (
+  id: number,
+  getComplete: () => boolean
+): HTMLButtonElement => {
   const button = document.createElement("button");
   button.className = "finishButton";
   button.innerHTML = checkSVG;
@@ -141,7 +162,7 @@ const createFinishButton = (id, getComplete) => {
   });
   return button;
 };
-const createTrashButton = (id) => {
+const createTrashButton = (id: number): HTMLButtonElement => {
   const button = document.createElement("button");
   button.className = "trashButton";
   button.innerHTML = trashSVG;
@@ -152,10 +173,9 @@ const createTrashButton = (id) => {
   });
   return button;
 };
-const createErrorElement = (message) => {
+const createErrorElement = (): HTMLDivElement => {
   const error = document.createElement("div");
   error.className = "errorPopUp";
-  error.innerHTML = message;
   error.addEventListener("click", () => {
     error.hidden = true;
   });
@@ -165,22 +185,24 @@ const createErrorElement = (message) => {
 /**
  * Event Listeners
  */
-if (!submitButton) {
+if (!submitButtonElement) {
   throw new Error(`could not find the submit button`);
 }
-submitButton.addEventListener("click", () => {
-  if (newTaskInput.value) {
-    createTask(newTaskInput.value).catch(() => {
-      displayError("Communication Error: could not create task in server");
-    });
-  } else {
-    newTaskInput.placeholder = "please write a task";
+submitButtonElement.addEventListener("click", () => {
+  if (isInputElement(newTaskInputElement)) {
+    if (newTaskInputElement.value) {
+      createTask(newTaskInputElement.value).catch(() => {
+        displayError("Communication Error: could not create task in server");
+      });
+    } else {
+      newTaskInputElement.placeholder = "please write a task";
+    }
   }
 });
 
 const errorPopUp = document.body.appendChild(createErrorElement());
 errorPopUp.hidden = true;
-const displayError = (message) => {
+const displayError = (message: string) => {
   errorPopUp.hidden = false;
   errorPopUp.innerHTML = message;
 };
@@ -189,3 +211,15 @@ const displayError = (message) => {
 loadAllTasks().catch(() => {
   displayError("Communication Error: could not load tasks from server");
 });
+
+function isInputElement(element: Element | null): element is HTMLInputElement {
+  return element instanceof HTMLInputElement;
+}
+
+function isDivElement(element: Element | null): element is HTMLDivElement {
+  return element instanceof HTMLDivElement;
+}
+
+function isLiElement(element: Element | null): element is HTMLLIElement {
+  return element instanceof HTMLLIElement;
+}
