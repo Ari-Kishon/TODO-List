@@ -189,7 +189,7 @@ if (!submitButtonElement) {
   throw new Error(`could not find the submit button`);
 }
 submitButtonElement.addEventListener("click", () => {
-  if (newTaskInputElement instanceof HTMLInputElement) {
+  if (isInputElement(newTaskInputElement)) {
     if (newTaskInputElement.value) {
       createTask(newTaskInputElement.value).catch(() => {
         displayError("Communication Error: could not create task in server");
