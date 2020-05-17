@@ -3,25 +3,27 @@ const trashSVG =
 const checkSVG =
   '<svg height="30pt" viewBox="0 -46 417.81333 417" width="30pt" xmlns="http://www.w3.org/2000/svg"><path d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"/></svg>';
 
-const taskList = document.querySelector(".taskList");
-const submitButton = document.querySelector(".submitButton");
-const newTaskInput = document.querySelector(".newTaskInput");
+interface Task {
+  id: number;
+  text: string;
+  complete: boolean;
+}
+const taskListElement = document.querySelector(".taskList");
+const submitButtonElement = document.querySelector(".submitButton");
+const newTaskInputElement = document.querySelector(".newTaskInput");
 
-const tasks = [];
+const tasks: Task[] = [];
 
 const getTaskElement = (id: number) => {
-  if (taskList) {
-    const task = taskList.querySelector(`.task[uid="${id}"]`);
-    if (task) {
-      return task;
-    } else {
-      throw new Error(`Could not find task #${id}`);
-    }
+  const task = document.querySelector(`.task[uid="${id}"]`);
+  if (!task) {
+    throw new Error(`Could not find task #${id}`);
   }
+  return task;
 };
 
 async function loadAllTasks() {
-  if (taskList) {
+  if (isDivElement(taskListElement)) {
     const list = await (
       await fetch(`/tasks`, {
         headers: {
@@ -32,20 +34,19 @@ async function loadAllTasks() {
     ).json();
     if (Array.isArray(list)) {
       for (const task of list) {
-        taskList.appendChild(
+        taskListElement.appendChild(
           createTaskElement(task.id, task.text, task.complete)
         );
       }
     }
+  } else {
+    throw new Error("task list element could not be found");
   }
 }
 
 async function createTask(text: string) {
-  if (
-    taskList instanceof HTMLDivElement &&
-    newTaskInput instanceof HTMLInputElement
-  ) {
-    const taskID = await (
+  if (isDivElement(taskListElement) && isInputElement(newTaskInputElement)) {
+    const taskID: number = await (
       await fetch("/task", {
         headers: {
           "Content-Type": "application/json",
@@ -56,8 +57,8 @@ async function createTask(text: string) {
         }),
       })
     ).json();
-    taskList.appendChild(createTaskElement(taskID, text));
-    newTaskInput.value = "";
+    taskListElement.appendChild(createTaskElement(taskID, text));
+    newTaskInputElement.value = "";
   } else {
     throw new Error(`newInput ot TaskList could not be found`);
   }
@@ -66,10 +67,7 @@ async function createTask(text: string) {
 async function toggleTask(id: number, completed: boolean) {
   const inputElement = document.querySelector(`.task[uid="${id}"] input`);
   const taskElement = document.querySelector(`.task[uid="${id}"]`);
-  if (
-    taskElement instanceof HTMLLIElement &&
-    inputElement instanceof HTMLInputElement
-  ) {
+  if (isLiElement(taskElement) && isInputElement(inputElement)) {
     await fetch("/task", {
       headers: {
         "Content-Type": "application/json",
@@ -110,7 +108,7 @@ async function removeTask(id: number) {
       id,
     }),
   });
-  getTaskElement(id)!.remove();
+  getTaskElement(id).remove();
 }
 
 /**
@@ -119,7 +117,7 @@ async function removeTask(id: number) {
 const createTaskElement = (
   id: number,
   text: string,
-  complete: boolean = false
+  complete = false
 ): HTMLLIElement => {
   const task = document.createElement("li");
   task.className = "task";
@@ -150,7 +148,7 @@ const createInput = (id: number, text: string): HTMLInputElement => {
 };
 const createFinishButton = (
   id: number,
-  getComplete: Function
+  getComplete: () => boolean
 ): HTMLButtonElement => {
   const button = document.createElement("button");
   button.className = "finishButton";
@@ -187,17 +185,17 @@ const createErrorElement = (): HTMLDivElement => {
 /**
  * Event Listeners
  */
-if (!submitButton) {
+if (!submitButtonElement) {
   throw new Error(`could not find the submit button`);
 }
-submitButton.addEventListener("click", () => {
-  if (newTaskInput instanceof HTMLInputElement) {
-    if (newTaskInput.value) {
-      createTask(newTaskInput.value).catch(() => {
+submitButtonElement.addEventListener("click", () => {
+  if (newTaskInputElement instanceof HTMLInputElement) {
+    if (newTaskInputElement.value) {
+      createTask(newTaskInputElement.value).catch(() => {
         displayError("Communication Error: could not create task in server");
       });
     } else {
-      newTaskInput.placeholder = "please write a task";
+      newTaskInputElement.placeholder = "please write a task";
     }
   }
 });
@@ -213,3 +211,15 @@ const displayError = (message: string) => {
 loadAllTasks().catch(() => {
   displayError("Communication Error: could not load tasks from server");
 });
+
+function isInputElement(element: Element | null): element is HTMLInputElement {
+  return element instanceof HTMLInputElement;
+}
+
+function isDivElement(element: Element | null): element is HTMLDivElement {
+  return element instanceof HTMLDivElement;
+}
+
+function isLiElement(element: Element | null): element is HTMLLIElement {
+  return element instanceof HTMLLIElement;
+}
