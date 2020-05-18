@@ -12,9 +12,8 @@ const taskListElement = document.querySelector(".taskList");
 const submitButtonElement = document.querySelector(".submitButton");
 const newTaskInputElement = document.querySelector(".newTaskInput");
 
-const tasks: Task[] = [];
-
 const getTaskElement = (id: number) => {
+  // should i type check task?
   const task = document.querySelector(`.task[uid="${id}"]`);
   if (!task) {
     throw new Error(`Could not find task #${id}`);
@@ -24,7 +23,8 @@ const getTaskElement = (id: number) => {
 
 async function loadAllTasks() {
   if (isDivElement(taskListElement)) {
-    const list = await (
+    // is this ok to do?
+    const list: Task[] = await (
       await fetch(`/tasks`, {
         headers: {
           Accept: "application/json",
@@ -32,12 +32,10 @@ async function loadAllTasks() {
         method: "GET",
       })
     ).json();
-    if (Array.isArray(list)) {
-      for (const task of list) {
-        taskListElement.appendChild(
-          createTaskElement(task.id, task.text, task.complete)
-        );
-      }
+    for (const task of list) {
+      taskListElement.appendChild(
+        createTaskElement(task.id, task.text, task.complete)
+      );
     }
   } else {
     throw new Error("task list element could not be found");
@@ -98,7 +96,7 @@ async function renameTask(id: number, text: string) {
   });
 }
 
-async function removeTask(id: number) {
+async function deleteTask(id: number) {
   await fetch("/task", {
     headers: {
       "Content-Type": "application/json",
@@ -167,7 +165,7 @@ const createTrashButton = (id: number): HTMLButtonElement => {
   button.className = "trashButton";
   button.innerHTML = trashSVG;
   button.addEventListener("click", () => {
-    removeTask(id).catch(() => {
+    deleteTask(id).catch(() => {
       displayError("Communication Error: could not remove task from server");
     });
   });
