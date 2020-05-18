@@ -1,17 +1,12 @@
-import express = require("express");
-import { Request, Response } from "express";
-import bodyParser = require("body-parser");
-import path = require("path");
+import express from "express";
+import type { Request, Response } from "express";
+import type { Task, Tasks } from "../../types";
+import bodyParser from "body-parser";
+import path from "path";
 
 const PORT = 8080;
 
-interface Task {
-  id: number;
-  text: string;
-  complete: boolean;
-}
-
-const tasks: Task[] = [];
+const tasks: Tasks = [];
 
 const addNewTask = (id: number, text: string) =>
   tasks.push({
@@ -21,10 +16,10 @@ const addNewTask = (id: number, text: string) =>
   });
 
 const server = express();
-server.use(express.static(path.join(__dirname, "../..")));
+server.use(express.static(path.join(__dirname, "../../..")));
 server.use(bodyParser.json());
 server.get("/", (req: Request, res: Response) =>
-  res.sendFile(path.join(__dirname, "../../app", "index.html"))
+  res.sendFile(path.join(__dirname, "../../../static", "index.html"))
 );
 server.get("/tasks", getAllTasks);
 server.post("/", (req: Request, res: Response) =>

@@ -2,20 +2,13 @@ const trashSVG =
   '<svg height="30pt" viewBox="-48 0 407 407" width="30pt" xmlns="http: //www.w3.org/2000/svg"><path d="m89.199219 37c0-12.132812 9.46875-21 21.601562-21h88.800781c12.128907 0 21.597657 8.867188 21.597657 21v23h16v-23c0-20.953125-16.644531-37-37.597657-37h-88.800781c-20.953125 0-37.601562 16.046875-37.601562 37v23h16zm0 0"/><path d="m60.601562 407h189.199219c18.242188 0 32.398438-16.046875 32.398438-36v-247h-254v247c0 19.953125 14.15625 36 32.402343 36zm145.597657-244.800781c0-4.417969 3.582031-8 8-8s8 3.582031 8 8v189c0 4.417969-3.582031 8-8 8s-8-3.582031-8-8zm-59 0c0-4.417969 3.582031-8 8-8s8 3.582031 8 8v189c0 4.417969-3.582031 8-8 8s-8-3.582031-8-8zm-59 0c0-4.417969 3.582031-8 8-8s8 3.582031 8 8v189c0 4.417969-3.582031 8-8 8s-8-3.582031-8-8zm0 0"/><path d="m20 108h270.398438c11.046874 0 20-8.953125 20-20s-8.953126-20-20-20h-270.398438c-11.046875 0-20 8.953125-20 20s8.953125 20 20 20zm0 0"/></svg>';
 const checkSVG =
   '<svg height="30pt" viewBox="0 -46 417.81333 417" width="30pt" xmlns="http://www.w3.org/2000/svg"><path d="m159.988281 318.582031c-3.988281 4.011719-9.429687 6.25-15.082031 6.25s-11.09375-2.238281-15.082031-6.25l-120.449219-120.46875c-12.5-12.5-12.5-32.769531 0-45.246093l15.082031-15.085938c12.503907-12.5 32.75-12.5 45.25 0l75.199219 75.203125 203.199219-203.203125c12.503906-12.5 32.769531-12.5 45.25 0l15.082031 15.085938c12.5 12.5 12.5 32.765624 0 45.246093zm0 0"/></svg>';
-
-interface Task {
-  id: number;
-  text: string;
-  complete: boolean;
-}
 const taskListElement = document.querySelector(".taskList");
 const submitButtonElement = document.querySelector(".submitButton");
 const newTaskInputElement = document.querySelector(".newTaskInput");
 
 const getTaskElement = (id: number) => {
-  // should i type check task?
   const task = document.querySelector(`.task[uid="${id}"]`);
-  if (!task) {
+  if (!isLiElement(task)) {
     throw new Error(`Could not find task #${id}`);
   }
   return task;
@@ -23,8 +16,7 @@ const getTaskElement = (id: number) => {
 
 async function loadAllTasks() {
   if (isDivElement(taskListElement)) {
-    // is this ok to do?
-    const list: Task[] = await (
+    const list = await (
       await fetch(`/tasks`, {
         headers: {
           Accept: "application/json",
@@ -221,3 +213,10 @@ function isDivElement(element: Element | null): element is HTMLDivElement {
 function isLiElement(element: Element | null): element is HTMLLIElement {
   return element instanceof HTMLLIElement;
 }
+/**
+ * function isTasksType(object: any): object is Tasks {
+  console.log(typeof object);
+  return true;
+}
+ * @param object 
+ */
