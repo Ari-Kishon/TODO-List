@@ -5,7 +5,7 @@
   "main": "server/server.js",
   "scripts": {
     "start": "npm run-script build && npm run-script init",
-    "init": "node dist/src/server/server.js",
+    "init": "node dist/server/server.js",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

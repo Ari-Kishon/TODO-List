@@ -6,6 +6,12 @@ const taskListElement = document.querySelector(".taskList");
 const submitButtonElement = document.querySelector(".submitButton");
 const newTaskInputElement = document.querySelector(".newTaskInput");
 
+interface Task {
+  id: number;
+  text: string;
+  complete: boolean;
+}
+
 const getTaskElement = (id: number) => {
   const task = document.querySelector(`.task[uid="${id}"]`);
   if (!isLiElement(task)) {
