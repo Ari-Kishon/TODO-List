@@ -219,10 +219,3 @@ function isDivElement(element: Element | null): element is HTMLDivElement {
 function isLiElement(element: Element | null): element is HTMLLIElement {
   return element instanceof HTMLLIElement;
 }
-/**
- * function isTasksType(object: any): object is Tasks {
-  console.log(typeof object);
-  return true;
-}
- * @param object 
- */
